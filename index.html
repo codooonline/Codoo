@@ -7,7 +7,6 @@
 <title>Codoo</title>
 
 <style>
-/* ---------- BASE ---------- */
 * {
   box-sizing: border-box;
   font-family: Consolas, monospace;
@@ -22,7 +21,7 @@ body {
   flex-direction: column;
 }
 
-/* ---------- TOP BAR ---------- */
+/* TOP BAR */
 .topbar {
   display: flex;
   align-items: center;
@@ -31,19 +30,14 @@ body {
 }
 
 .logo {
-  font-weight: bold;
   font-size: 18px;
+  font-weight: bold;
 }
 
-.logo span.co {
-  color: #00e5ff;
-}
+.logo .co { color: #00e5ff; }
+.logo .doo { color: #00ff88; }
 
-.logo span.doo {
-  color: #00ff88;
-}
-
-.top-actions {
+.actions {
   margin-left: auto;
   display: flex;
   gap: 10px;
@@ -61,34 +55,10 @@ body {
   background: #222;
 }
 
-/* ---------- EDITOR AREA ---------- */
-.editor-wrapper {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-.tabs {
-  display: flex;
-  border-bottom: 1px solid #222;
-}
-
-.tab {
-  padding: 8px 14px;
-  cursor: pointer;
-  color: #aaa;
-}
-
-.tab.active {
-  background: #1a1a1a;
-  color: #fff;
-}
-
-/* ---------- CODE AREA ---------- */
-.code-area {
+/* EDITOR */
+.editor {
   flex: 1;
   background: #1b1b1b;
-  position: relative;
 }
 
 textarea {
@@ -99,22 +69,17 @@ textarea {
   border: none;
   outline: none;
   resize: none;
-  padding: 14px;
+  padding: 16px;
   font-size: 14px;
   line-height: 1.5;
 }
 
-/* Syntax-ish coloring */
-textarea.html { color: #e06c75; }
-textarea.css { color: #61afef; }
-textarea.js { color: #98c379; }
-
-/* ---------- RUN PANEL ---------- */
+/* RUN PANEL */
 .run-panel {
   height: 40%;
-  border-top: 1px solid #222;
   display: none;
   flex-direction: column;
+  border-top: 1px solid #222;
 }
 
 .run-header {
@@ -126,11 +91,11 @@ textarea.js { color: #98c379; }
 
 iframe {
   flex: 1;
-  background: white;
   border: none;
+  background: white;
 }
 
-/* ---------- MOBILE ---------- */
+/* MOBILE */
 @media (max-width: 600px) {
   textarea {
     font-size: 13px;
@@ -141,47 +106,46 @@ iframe {
 
 <body>
 
-<!-- TOP BAR -->
 <div class="topbar">
   <div class="logo">
     <span class="co">Co</span><span class="doo">doo</span>
   </div>
 
-  <div class="top-actions">
+  <div class="actions">
     <button class="btn" onclick="copyCode()">Copy</button>
     <button class="btn" onclick="runCode()">Run</button>
   </div>
 </div>
 
-<!-- EDITOR -->
-<div class="editor-wrapper">
-  <div class="tabs">
-    <div class="tab active" onclick="switchTab('html')">HTML</div>
-    <div class="tab" onclick="switchTab('css')">CSS</div>
-    <div class="tab" onclick="switchTab('js')">JS</div>
-  </div>
+<div class="editor">
+<textarea id="code">
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body {
+      background: #111;
+      color: white;
+      font-family: sans-serif;
+    }
+  </style>
+</head>
+<body>
 
-  <div class="code-area">
-    <textarea id="html" class="html"><!-- Write HTML -->
-<div id="app">Hello Codoo</div></textarea>
+<h1>Hello Codoo</h1>
+<p>Click anywhere</p>
 
-    <textarea id="css" class="css" style="display:none;">
-body {
-  background: #111;
-  color: white;
-}
-#app {
-  font-size: 24px;
-}</textarea>
+<script>
+document.body.onclick = () => {
+  alert("Codoo runs real JS 😏");
+};
+</script>
 
-    <textarea id="js" class="js" style="display:none;">
-document.getElementById("app").onclick = () => {
-  alert("Codoo runs JS 😏");
-};</textarea>
-  </div>
+</body>
+</html>
+</textarea>
 </div>
 
-<!-- RUN PANEL -->
 <div class="run-panel" id="runPanel">
   <div class="run-header">
     <span>Output</span>
@@ -191,64 +155,30 @@ document.getElementById("app").onclick = () => {
 </div>
 
 <script>
-let currentTab = "html";
-
-/* ---------- TAB SWITCH ---------- */
-function switchTab(tab) {
-  document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-  document.querySelector(`.tab:nth-child(${tab === "html" ? 1 : tab === "css" ? 2 : 3})`).classList.add("active");
-
-  ["html", "css", "js"].forEach(id => {
-    document.getElementById(id).style.display = id === tab ? "block" : "none";
-  });
-
-  currentTab = tab;
-}
-
-/* ---------- RUN ENGINE ---------- */
 function runCode() {
-  const html = document.getElementById("html").value;
-  const css = document.getElementById("css").value;
-  const js = document.getElementById("js").value;
-
+  const code = document.getElementById("code").value;
   const iframe = document.getElementById("output");
-  const doc = `
-<!DOCTYPE html>
-<html>
-<head>
-<style>${css}</style>
-</head>
-<body>
-${html}
-<script>
-${js}
-<\/script>
-</body>
-</html>
-  `;
-
-  iframe.srcdoc = doc;
+  iframe.srcdoc = code;
   document.getElementById("runPanel").style.display = "flex";
 }
 
-/* ---------- CLOSE RUN ---------- */
 function closeRun() {
   document.getElementById("runPanel").style.display = "none";
 }
 
-/* ---------- COPY ---------- */
 function copyCode() {
-  const code = document.getElementById(currentTab).value;
-  navigator.clipboard.writeText(code);
+  navigator.clipboard.writeText(
+    document.getElementById("code").value
+  );
 }
 
-/* ---------- SIMPLE EMMET ---------- */
-document.querySelectorAll("textarea").forEach(area => {
-  area.addEventListener("keydown", e => {
-    if (e.key === "Tab") {
-      e.preventDefault();
-      if (area.value.endsWith("!")) {
-        area.value = area.value.replace(/!$/, 
+/* BASIC EMMET */
+document.getElementById("code").addEventListener("keydown", e => {
+  if (e.key === "Tab") {
+    e.preventDefault();
+    const area = e.target;
+    if (area.value.endsWith("!")) {
+      area.value = area.value.replace(/!$/, 
 `<!DOCTYPE html>
 <html>
 <head>
@@ -259,9 +189,8 @@ document.querySelectorAll("textarea").forEach(area => {
 
 </body>
 </html>`);
-      }
     }
-  });
+  }
 });
 </script>
 
