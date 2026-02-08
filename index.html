@@ -4,142 +4,264 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Codoo – HTML Playground</title>
-
-<!-- CodeMirror -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/material-darker.min.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/show-hint.min.css">
+<title>Codoo</title>
 
 <style>
-body { margin:0; font-family:system-ui,sans-serif; background:#0f1117; color:#e5e7eb; height:100vh; display:flex; flex-direction:column; }
-header{display:flex; justify-content:space-between; align-items:center; padding:12px 16px; background:#161a23; border-bottom:2px solid #222;}
-header h1{font-size:22px; margin:0; font-weight:bold;} header h1 span{color:#22d3ee;}
-.header-buttons{display:flex; gap:6px; align-items:center;}
-header button, #copyBtn{background:#22d3ee; border:none; color:white; padding:6px 12px; border-radius:6px; cursor:pointer; transition:0.2s;}
-header button:hover, #copyBtn:hover{background:#06b6d4;}
-main{flex:1; display:grid; grid-template-columns:1fr 0fr; min-height:0; position:relative; transition:0.4s;}
-.editor{height:100%; width:100%; background:#2d2d2d; border-right:4px solid #222; position:relative; transition:0.4s;}
-.editor .CodeMirror { background:#2d2d2d !important; color:#e6e6e6; }
-.CodeMirror-cursor { border-left:2px solid #ffffff !important; }
-.CodeMirror-selected { background:rgba(255,255,255,0.2) !important; }
+/* ---------- BASE ---------- */
+* {
+  box-sizing: border-box;
+  font-family: Consolas, monospace;
+}
 
-.preview{background:white; display:none; position:relative; overflow:hidden; transition:0.4s;}
-iframe{width:100%; height:100%; border:none;}
+body {
+  margin: 0;
+  background: #0f0f0f;
+  color: #eaeaea;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
 
-#copyBtn{position:absolute;top:10px; right:10px;}
-#menuBtn{background:#161a23; color:#e5e7eb; font-size:20px; padding:6px 10px; border-radius:6px; border:none; cursor:pointer; transition:0.2s;}
-#menuBtn:hover{background:#22d3ee; color:white;}
-#menu{position:absolute; top:44px; left:0; background:#161a23; border:2px solid #222; border-radius:6px; padding:10px; display:none; flex-direction:column; gap:6px; z-index:10;}
-.menu-group{margin-bottom:8px;}
-.menu-group label{font-weight:bold;margin-bottom:4px;display:block;}
-.menu-group button{background:#22d3ee; color:white; border:none; padding:6px 10px; border-radius:6px; cursor:pointer; transition:0.2s; margin-bottom:4px; width:100%;}
-.menu-group button:hover{background:#06b6d4;}
+/* ---------- TOP BAR ---------- */
+.topbar {
+  display: flex;
+  align-items: center;
+  padding: 10px 14px;
+  border-bottom: 1px solid #222;
+}
 
-@media(max-width:900px){main{grid-template-columns:1fr;grid-template-rows:1fr 0fr;}.editor{border-right:none;border-bottom:4px solid #222;}}
+.logo {
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.logo span.co {
+  color: #00e5ff;
+}
+
+.logo span.doo {
+  color: #00ff88;
+}
+
+.top-actions {
+  margin-left: auto;
+  display: flex;
+  gap: 10px;
+}
+
+.btn {
+  background: #1a1a1a;
+  color: #eaeaea;
+  border: 1px solid #333;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background: #222;
+}
+
+/* ---------- EDITOR AREA ---------- */
+.editor-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.tabs {
+  display: flex;
+  border-bottom: 1px solid #222;
+}
+
+.tab {
+  padding: 8px 14px;
+  cursor: pointer;
+  color: #aaa;
+}
+
+.tab.active {
+  background: #1a1a1a;
+  color: #fff;
+}
+
+/* ---------- CODE AREA ---------- */
+.code-area {
+  flex: 1;
+  background: #1b1b1b;
+  position: relative;
+}
+
+textarea {
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  color: #d4d4d4;
+  border: none;
+  outline: none;
+  resize: none;
+  padding: 14px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* Syntax-ish coloring */
+textarea.html { color: #e06c75; }
+textarea.css { color: #61afef; }
+textarea.js { color: #98c379; }
+
+/* ---------- RUN PANEL ---------- */
+.run-panel {
+  height: 40%;
+  border-top: 1px solid #222;
+  display: none;
+  flex-direction: column;
+}
+
+.run-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 10px;
+  border-bottom: 1px solid #222;
+}
+
+iframe {
+  flex: 1;
+  background: white;
+  border: none;
+}
+
+/* ---------- MOBILE ---------- */
+@media (max-width: 600px) {
+  textarea {
+    font-size: 13px;
+  }
+}
 </style>
 </head>
+
 <body>
 
-<header>
-  <div style="display:flex;align-items:center;gap:8px;">
-    <button id="menuBtn">&#9776;</button>
-    <h1>Co<span>Doo</span></h1>
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="logo">
+    <span class="co">Co</span><span class="doo">doo</span>
   </div>
-  <div class="header-buttons">
-    <button id="undoBtn">Undo</button>
-    <button id="redoBtn">Redo</button>
-    <button id="runBtn">Run</button>
-  </div>
-</header>
 
-<div id="menu">
-  <div class="menu-group">
-    <label>&lt;HTML&gt;</label>
-    <button data-snippet="html">HTML Boilerplate</button>
-    <button data-snippet="buttons">Buttons Demo</button>
-  </div>
-  <div class="menu-group">
-    <label>&lt;CSS&gt;</label>
-    <button data-snippet="css">CSS Example</button>
-    <button data-snippet="grid">Grid Layout</button>
-    <button data-snippet="forms">Forms Example</button>
+  <div class="top-actions">
+    <button class="btn" onclick="copyCode()">Copy</button>
+    <button class="btn" onclick="runCode()">Run</button>
   </div>
 </div>
 
-<main>
-  <div class="editor">
-    <textarea id="code"></textarea>
-    <button id="copyBtn">Copy</button>
+<!-- EDITOR -->
+<div class="editor-wrapper">
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('html')">HTML</div>
+    <div class="tab" onclick="switchTab('css')">CSS</div>
+    <div class="tab" onclick="switchTab('js')">JS</div>
   </div>
-  <div class="preview">
-    <button id="closePreview" style="position:absolute;top:10px;right:10px;padding:6px 12px;border:none;border-radius:6px;background:#22d3ee;color:white;cursor:pointer;">Close Preview</button>
-    <iframe id="preview"></iframe>
-  </div>
-</main>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/xml/xml.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/javascript/javascript.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/css/css.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/htmlmixed/htmlmixed.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closetag.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closebrackets.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/show-hint.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/html-hint.min.js"></script>
+  <div class="code-area">
+    <textarea id="html" class="html"><!-- Write HTML -->
+<div id="app">Hello Codoo</div></textarea>
+
+    <textarea id="css" class="css" style="display:none;">
+body {
+  background: #111;
+  color: white;
+}
+#app {
+  font-size: 24px;
+}</textarea>
+
+    <textarea id="js" class="js" style="display:none;">
+document.getElementById("app").onclick = () => {
+  alert("Codoo runs JS 😏");
+};</textarea>
+  </div>
+</div>
+
+<!-- RUN PANEL -->
+<div class="run-panel" id="runPanel">
+  <div class="run-header">
+    <span>Output</span>
+    <button class="btn" onclick="closeRun()">Close</button>
+  </div>
+  <iframe id="output"></iframe>
+</div>
 
 <script>
-const starterCode = `<!DOCTYPE html>
+let currentTab = "html";
+
+/* ---------- TAB SWITCH ---------- */
+function switchTab(tab) {
+  document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+  document.querySelector(`.tab:nth-child(${tab === "html" ? 1 : tab === "css" ? 2 : 3})`).classList.add("active");
+
+  ["html", "css", "js"].forEach(id => {
+    document.getElementById(id).style.display = id === tab ? "block" : "none";
+  });
+
+  currentTab = tab;
+}
+
+/* ---------- RUN ENGINE ---------- */
+function runCode() {
+  const html = document.getElementById("html").value;
+  const css = document.getElementById("css").value;
+  const js = document.getElementById("js").value;
+
+  const iframe = document.getElementById("output");
+  const doc = `
+<!DOCTYPE html>
 <html>
-<head><style>body{font-family:sans-serif;}</style></head>
-<body><h1>Hello Codoo 👋</h1><p>Edit HTML/CSS and click Run to see it.</p></body>
-</html>`;
+<head>
+<style>${css}</style>
+</head>
+<body>
+${html}
+<script>
+${js}
+<\/script>
+</body>
+</html>
+  `;
 
-const editor = CodeMirror.fromTextArea(document.getElementById('code'), {
-  mode:'htmlmixed', lineNumbers:true, theme:'material-darker',
-  tabSize:2, autoCloseTags:true, autoCloseBrackets:true, matchBrackets:true,
-  extraKeys:{'Ctrl-Space':'autocomplete','<':function(cm){cm.replaceSelection('<');cm.showHint({completeSingle:false});}}
-});
-editor.setValue(starterCode);
+  iframe.srcdoc = doc;
+  document.getElementById("runPanel").style.display = "flex";
+}
 
-const iframe = document.getElementById('preview');
-const previewDiv = document.querySelector('.preview');
+/* ---------- CLOSE RUN ---------- */
+function closeRun() {
+  document.getElementById("runPanel").style.display = "none";
+}
 
-document.getElementById('runBtn').onclick = ()=>{
-  previewDiv.style.display='block';
-  document.querySelector('main').style.gridTemplateColumns='1fr 1fr';
-  const doc = iframe.contentDocument || iframe.contentWindow.document;
-  doc.open();
-  doc.write(editor.getValue());
-  doc.close();
-};
+/* ---------- COPY ---------- */
+function copyCode() {
+  const code = document.getElementById(currentTab).value;
+  navigator.clipboard.writeText(code);
+}
 
-document.getElementById('closePreview').onclick = ()=>{
-  previewDiv.style.display='none';
-  document.querySelector('main').style.gridTemplateColumns='1fr 0fr';
-};
+/* ---------- SIMPLE EMMET ---------- */
+document.querySelectorAll("textarea").forEach(area => {
+  area.addEventListener("keydown", e => {
+    if (e.key === "Tab") {
+      e.preventDefault();
+      if (area.value.endsWith("!")) {
+        area.value = area.value.replace(/!$/, 
+`<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Codoo</title>
+</head>
+<body>
 
-document.getElementById('undoBtn').onclick = ()=>editor.undo();
-document.getElementById('redoBtn').onclick = ()=>editor.redo();
-
-document.getElementById('copyBtn').onclick = ()=>{
-  navigator.clipboard.writeText(editor.getValue());
-  alert('Code copied!');
-};
-
-const menuBtn = document.getElementById('menuBtn');
-const menu = document.getElementById('menu');
-menuBtn.onclick = ()=>{ menu.style.display = menu.style.display==='flex'?'none':'flex'; }
-menu.querySelectorAll('button').forEach(btn=>{
-  btn.onclick = ()=>{
-    const val = btn.dataset.snippet;
-    if(val==='html') editor.setValue('<!DOCTYPE html>\\n<html>\\n<head>\\n <title>HTML Boilerplate</title>\\n</head>\\n<body>\\n <h1>Hello World</h1>\\n</body>\\n</html>');
-    else if(val==='css') editor.setValue('body{font-family:sans-serif;background:#f4f4f4;color:#111;} h1{color:#4f46e5;}');
-    else if(val==='buttons') editor.setValue('<button>Click me</button><button>Another</button>');
-    else if(val==='grid') editor.setValue('<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;"><div>A</div><div>B</div></div>');
-    else if(val==='forms') editor.setValue('<form><input placeholder="Name"><button>Submit</button></form>');
-    menu.style.display='none';
-  };
+</body>
+</html>`);
+      }
+    }
+  });
 });
 </script>
 
