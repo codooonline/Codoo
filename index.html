@@ -1,85 +1,45 @@
 
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Codoo 2.0</title>
+<title>Codoo</title>
 <style>
-/* ===== BASE ===== */
-* { box-sizing:border-box; }
-body {
-  margin:0; font-family:system-ui,sans-serif; background:#0b0b0b; color:#eaeaea;
-  height:100vh; overflow:hidden; display:flex; flex-direction:column;
-}
-button{font-family:inherit; cursor:pointer;}
-/* ===== TOP BAR ===== */
-.topbar {
-  display:flex; align-items:center; justify-content:space-between;
-  height:50px; padding:0 12px; border-bottom:1px solid #222;
-}
-.logo{font-family:Consolas,monospace;font-weight:bold;font-size:18px;}
-.actions{display:flex; gap:6px; align-items:center;}
-.btn{
-  background:#141414; color:#eaeaea; border:1px solid #2a2a2a; padding:5px 10px;
-  border-radius:4px; transition:0.2s; box-shadow:0 2px 5px rgba(0,0,0,0.3);
-}
-.btn:hover{background:#1d1d1d; box-shadow:0 4px 10px rgba(0,0,0,0.4);}
-.btn-small{padding:3px 6px; font-size:12px;}
-/* ===== TEMPLATES ICON ===== */
-#templateBtn{
-  display:flex; align-items:center; justify-content:center; gap:6px;
-  border-radius:8px; padding:6px; font-weight:bold;
-  background:#141414; border:2px solid #2a2a2a;
-}
-#templateBtn:hover{background:#1d1d1d;}
-#templateIcon{
-  width:28px; height:28px; display:flex; align-items:center; justify-content:center;
-  border:2px solid #eaeaea; font-weight:bold; font-size:14px;
-  border-radius:4px;
-}
-/* ===== EDITOR ===== */
-#editor{flex:1; width:100%;}
-/* ===== RUN OVERLAY ===== */
-#runOverlay{
-  position:fixed; inset:0; background:rgba(0,0,0,0.6);
-  display:none; flex-direction:column; justify-content:flex-start; align-items:center;
-  z-index:50; opacity:0; transition:opacity 1s;
-}
+*{box-sizing:border-box;}
+body{margin:0;height:100vh;background:#0b0b0b;color:#eaeaea;font-family:system-ui,sans-serif;overflow:hidden;display:flex;flex-direction:column;}
+.topbar{height:64px;display:flex;align-items:center;padding:0 16px;border-bottom:1px solid #222;flex-shrink:0;box-shadow:0 2px 6px rgba(0,0,0,0.3);}
+.logo{font-family:Consolas, monospace;font-weight:bold;font-size:20px;}
+.actions{margin-left:auto;display:flex;gap:8px;align-items:center;}
+.icon-btn{width:32px;height:32px;background:#141414;color:#eaeaea;border:1px solid #2a2a2a;border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:0.2s;}
+.icon-btn:hover{background:#1d1d1d;box-shadow:0 2px 4px rgba(0,0,0,0.5);}
+.icon-btn svg{width:16px;height:16px;fill:#eaeaea;}
+#workspace{flex:1;display:flex;overflow:hidden;}
+#editorArea{flex:1;position:relative;}
+#editor{width:100%;height:100%;}
+#sidebar{width:320px;background:#111;border-left:1px solid #222;display:flex;flex-direction:column;flex-shrink:0;transition:transform 0.3s ease;}
+.sidebar-tabs{display:flex;border-bottom:1px solid #222;}
+.sidebar-tab{flex:1;text-align:center;padding:8px 0;cursor:pointer;transition:0.2s;border-right:1px solid #222;font-weight:bold;font-size:14px;color:#eaeaea;}
+.sidebar-tab:last-child{border-right:none;}
+.sidebar-tab.active{background:#1d1d1d;}
+.sidebar-content{flex:1;overflow-y:auto;padding:8px;display:none;flex-direction:column;gap:8px;}
+.sidebar-content.active{display:flex;}
+.template-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.template-card{background:#1d1d1d;border:1px solid #2a2a2a;border-radius:8px;padding:8px;cursor:pointer;transition:0.2s;}
+.template-card:hover{background:#2a2a2a;box-shadow:0 2px 6px rgba(0,0,0,0.5);}
+.template-header{display:flex;align-items:center;gap:6px;font-weight:bold;}
+.template-header span{font-size:16px;}
+.template-body{font-family:Consolas, monospace;font-size:12px;white-space:pre-wrap;overflow-x:auto;margin-top:4px;}
+.note-card{background:#1d1d1d;border:1px solid #2a2a2a;border-radius:8px;padding:8px;display:flex;flex-direction:column;}
+.note-title{font-weight:bold;margin-bottom:4px;font-size:14px;}
+.note-textarea{flex:1;background:#141414;color:#eaeaea;border:none;resize:none;padding:4px;font-family:Consolas, monospace;font-size:13px;border-radius:4px;outline:none;}
+#runOverlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);display:none;align-items:center;justify-content:center;z-index:50;opacity:0;transition:opacity 1s;}
 #runOverlay.show{display:flex;}
 #runOverlay.visible{opacity:1;}
-.runPanel{
-  width:92%; max-width:900px; height:80%; background:#ffffff;
-  display:flex; flex-direction:column; border-radius:6px; overflow:hidden;
-}
-.runHeader{
-  background:#111; color:#fff; padding:8px 10px; display:flex;
-  justify-content:space-between; align-items:center;
-}
-iframe{flex:1; border:none;}
-/* ===== TEMPLATES PANEL ===== */
-#templateOverlay{
-  position:fixed; inset:0; background:rgba(0,0,0,0.7);
-  display:none; flex-direction:column; justify-content:center; align-items:center;
-  z-index:40; opacity:0; transition:opacity 0.3s;
-}
-#templateOverlay.show{display:flex;}
-#templateOverlay.visible{opacity:1;}
-.templatePanel{
-  width:90%; max-width:600px; background:#141414; border-radius:8px; padding:12px;
-  display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px;
-  max-height:70%; overflow-y:auto;
-}
-.templateCard{
-  background:#1a1a1a; border:1px solid #2a2a2a; border-radius:6px;
-  padding:10px; cursor:pointer; transition:0.2s; font-family:Consolas,monospace;
-}
-.templateCard:hover{background:#222; transform:translateY(-2px);}
-.templateCard code{font-size:12px; display:block; white-space:pre-wrap;}
+.runPanel{width:92%;max-width:900px;height:80%;background:#fff;display:flex;flex-direction:column;border-radius:6px;overflow:hidden;}
+.runHeader{background:#111;color:#fff;padding:8px 10px;display:flex;justify-content:space-between;align-items:center;}
+iframe{flex:1;border:none;}
 </style>
-
-<!-- Monaco Loader -->
 <script src="https://unpkg.com/monaco-editor@0.45.0/min/vs/loader.js"></script>
 </head>
 <body>
@@ -87,31 +47,62 @@ iframe{flex:1; border:none;}
 <div class="topbar">
   <div class="logo">Codoo</div>
   <div class="actions">
-    <button class="btn" id="undoBtn" title="Undo">⟲</button>
-    <button class="btn" id="redoBtn" title="Redo">⟳</button>
-    <button class="btn" id="copyBtn">Copy</button>
-    <button class="btn" id="runBtn">Run</button>
-    <button id="templateBtn"><div id="templateIcon">&lt;/&gt;</div>Templates</button>
+    <div class="icon-btn" id="undoBtn" title="Undo"><svg viewBox="0 0 24 24"><path d="M12 8V4L4 12l8 8v-4c4 0 6 1 8 4-2-3-4-4-8-4z"/></svg></div>
+    <div class="icon-btn" id="redoBtn" title="Redo"><svg viewBox="0 0 24 24"><path d="M12 8V4l8 8-8 8v-4c-4 0-6 1-8 4 2-3 4-4 8-4z"/></svg></div>
+    <div class="icon-btn" onclick="copyCode()" title="Copy">&#x2398;</div>
+    <div class="icon-btn" onclick="runCode()" title="Run">&#9658;</div>
   </div>
 </div>
 
-<div id="editor"></div>
+<div id="workspace">
+  <div id="editorArea"><div id="editor"></div></div>
+  <div id="sidebar">
+    <div class="sidebar-tabs">
+      <div class="sidebar-tab active" data-tab="templates">Templates</div>
+      <div class="sidebar-tab" data-tab="notes">Notes</div>
+    </div>
+    <div class="sidebar-content active" id="templates">
+      <div class="template-grid">
+        <!-- HTML Templates -->
+        <div class="template-card" onclick="selectTemplate(this)">
+          <div class="template-header"><span>&lt;/&gt;</span> HTML 1</div>
+          <div class="template-body">&lt;!DOCTYPE html&gt;\n&lt;html&gt;\n&lt;body&gt;\n&lt;h1&gt;Hello World&lt;/h1&gt;\n&lt;/body&gt;\n&lt;/html&gt;</div>
+        </div>
+        <div class="template-card" onclick="selectTemplate(this)">
+          <div class="template-header"><span>&lt;/&gt;</span> HTML 2</div>
+          <div class="template-body">&lt;!DOCTYPE html&gt;\n&lt;html&gt;\n&lt;body&gt;\n&lt;p&gt;Hello World&lt;/p&gt;\n&lt;/body&gt;\n&lt;/html&gt;</div>
+        </div>
+        <div class="template-card" onclick="selectTemplate(this)">
+          <div class="template-header"><span>&lt;/&gt;</span> CSS 1</div>
+          <div class="template-body">&lt;!DOCTYPE html&gt;\n&lt;html&gt;\n&lt;head&gt;&lt;style&gt;body{background:#111;color:white}&lt;/style&gt;&lt;/head&gt;\n&lt;body&gt;&lt;/body&gt;\n&lt;/html&gt;</div>
+        </div>
+        <div class="template-card" onclick="selectTemplate(this)">
+          <div class="template-header"><span>&lt;/&gt;</span> JS 1</div>
+          <div class="template-body">&lt;!DOCTYPE html&gt;\n&lt;html&gt;\n&lt;body&gt;\n&lt;script&gt;console.log('Hello World');&lt;/script&gt;\n&lt;/body&gt;\n&lt;/html&gt;</div>
+        </div>
+        <!-- Add more up to 5x5 as needed -->
+      </div>
+    </div>
+    <div class="sidebar-content" id="notes">
+      <div class="note-card">
+        <div class="note-title">Note 1</div>
+        <textarea class="note-textarea" oninput="saveNotes()"></textarea>
+      </div>
+      <div class="note-card">
+        <div class="note-title">Note 2</div>
+        <textarea class="note-textarea" oninput="saveNotes()"></textarea>
+      </div>
+    </div>
+  </div>
+</div>
 
-<!-- RUN OVERLAY -->
 <div id="runOverlay">
   <div class="runPanel">
     <div class="runHeader">
       <span>Output</span>
-      <button class="btn btn-small" onclick="closeRun()">Close</button>
+      <button class="btn" onclick="closeRun()">Close</button>
     </div>
     <iframe id="output"></iframe>
-  </div>
-</div>
-
-<!-- TEMPLATE OVERLAY -->
-<div id="templateOverlay">
-  <div class="templatePanel" id="templatePanel">
-    <!-- JS will populate templates -->
   </div>
 </div>
 
@@ -124,112 +115,53 @@ require(['vs/editor/editor.main'], () => {
 <html>
 <body style="background:#111;color:white;font-family:sans-serif">
 <h1>Hello World</h1>
-<input placeholder="Type something">
-<script>
-document.querySelector("input").oninput = e => console.log(e.target.value);
-</script>
+<script>console.log("Hello World");</script>
 </body>
 </html>`,
     language: 'html',
     theme: 'vs-dark',
     automaticLayout: true,
-    fontSize:14,
+    fontSize: 14,
     minimap:{enabled:false},
-    wordWrap:'on',
-    autoClosingBrackets: true,
-    autoClosingQuotes: true
+    wordWrap:'on'
   });
 });
 
-/* ===== RUN ===== */
 function runCode(){
   const overlay = document.getElementById('runOverlay');
   overlay.classList.add('show');
   requestAnimationFrame(()=>overlay.classList.add('visible'));
-  document.getElementById('output').srcdoc = editor.getValue();
+  document.getElementById('output').srcdoc=editor.getValue();
 }
 function closeRun(){
-  const overlay = document.getElementById('runOverlay');
+  const overlay=document.getElementById('runOverlay');
   overlay.classList.remove('visible');
   setTimeout(()=>overlay.classList.remove('show'),1000);
 }
+function copyCode(){navigator.clipboard.writeText(editor.getValue());}
+document.getElementById('undoBtn').onclick=()=>editor.trigger('','undo',null);
+document.getElementById('redoBtn').onclick=()=>editor.trigger('','redo',null);
 
-/* ===== COPY ===== */
-document.getElementById('copyBtn').onclick = ()=>navigator.clipboard.writeText(editor.getValue());
-
-/* ===== UNDO/REDO ===== */
-document.getElementById('undoBtn').onclick = ()=>editor.undo();
-document.getElementById('redoBtn').onclick = ()=>editor.redo();
-
-/* ===== TEMPLATES ===== */
-const templates = [
-  {name:"HTML Hello", code:`<!DOCTYPE html>
-<html>
-<body style="background:#111;color:white;font-family:sans-serif">
-<h1>Hello World</h1>
-</body>
-</html>`},
-  {name:"CSS Hello", code:`<!DOCTYPE html>
-<html>
-<body style="background:#111;color:white;font-family:sans-serif">
-<h1 style="color:#fff;font-family:sans-serif">Hello World</h1>
-<style>
-body{margin:0;padding:10px;background:#111;color:white;font-family:sans-serif;}
-h1{color:#eaeaea;}
-</style>
-</body>
-</html>`},
-  {name:"JS Hello", code:`<!DOCTYPE html>
-<html>
-<body style="background:#111;color:white;font-family:sans-serif">
-<h1>Hello World</h1>
-<script>
-console.log("Hello World");
-</script>
-</body>
-</html>`},
-  {name:"HTML Form", code:`<!DOCTYPE html>
-<html>
-<body style="background:#111;color:white;font-family:sans-serif">
-<h1>Hello World</h1>
-<form><input placeholder="Name"><button>Submit</button></form>
-</body>
-</html>`},
-  {name:"JS Button", code:`<!DOCTYPE html>
-<html>
-<body style="background:#111;color:white;font-family:sans-serif">
-<h1>Hello World</h1>
-<button onclick="alert('Hello!')">Click Me</button>
-</body>
-</html>`}
-];
-
-const templatePanel = document.getElementById('templatePanel');
-templates.forEach(t=>{
-  const card = document.createElement('div');
-  card.className='templateCard';
-  card.innerHTML=`<strong>${t.name}</strong><code>${t.code}</code>`;
-  card.onclick=()=>{
-    editor.setValue(t.code);
-    closeTemplate();
+function selectTemplate(card){editor.setValue(card.querySelector('.template-body').textContent);}
+document.querySelectorAll('.sidebar-tab').forEach(tab=>{
+  tab.onclick=()=>{
+    document.querySelectorAll('.sidebar-tab').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.sidebar-content').forEach(c=>c.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById(tab.dataset.tab).classList.add('active');
   };
-  templatePanel.appendChild(card);
 });
 
-const templateBtn = document.getElementById('templateBtn');
-const templateOverlay = document.getElementById('templateOverlay');
-templateBtn.onclick=()=>{
-  templateOverlay.classList.add('show');
-  requestAnimationFrame(()=>templateOverlay.classList.add('visible'));
-};
-function closeTemplate(){
-  templateOverlay.classList.remove('visible');
-  setTimeout(()=>templateOverlay.classList.remove('show'),300);
+function saveNotes(){
+  const notes=[];
+  document.querySelectorAll('.note-textarea').forEach(n=>notes.push(n.value));
+  localStorage.setItem('codoo_notes',JSON.stringify(notes));
 }
-templateOverlay.onclick=(e)=>{
-  if(e.target===templateOverlay) closeTemplate();
-};
+function loadNotes(){
+  const notes=JSON.parse(localStorage.getItem('codoo_notes')||'[]');
+  document.querySelectorAll('.note-textarea').forEach((n,i)=>n.value=notes[i]||'');
+}
+loadNotes();
 </script>
-
 </body>
 </html>
